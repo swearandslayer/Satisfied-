@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crème de la Crème | 精神品鉴沙龙</title>
+    <!-- 引入 Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Noto+Serif+SC:wght@300;400;500&display=swap');
+
+        body {
+            background-color: #FAF1D6; /* 暖黄烘焙奶油底色 */
+            color: #2D241E; /* 深焙咖啡黑，清晰明亮的高对比度 */
+            font-family: 'Noto Serif SC', -apple-system, serif;
+        }
+        
+        .font-serif-title {
+            font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+        }
+
+        /* 暖黄奶油小方块 */
+        .creme-box {
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            background-color: #FFFDF4; /* 黄油白 */
+            border: 1px solid #E8D8B5;
+            box-shadow: 0 4px 18px -2px rgba(138, 107, 72, 0.08);
+        }
+
+        .creme-box:hover {
+            border-color: #C29B63;
+            background-color: #FFFFFF;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px -4px rgba(138, 107, 72, 0.16);
+        }
+
+        .fade-in {
+            animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-between p-5 sm:p-10 selection:bg-[#EBDAA8]">
+
+    <!-- 顶栏与标题（法式暖黄主页） -->
+    <header class="text-center my-6 fade-in max-w-lg">
+        <span class="text-xs tracking-[0.3em] uppercase text-[#A37B4C] font-serif-title block mb-2 font-medium">
+            🥐 SALON DE L'ESPRIT 🕯️
+        </span>
+        <h1 class="text-3xl sm:text-4xl font-serif-title font-semibold tracking-wider text-[#2D241E] mb-2">
+            Crème de la Crème
+        </h1>
+        <p id="sub-title" class="text-xs text-[#7A644D] tracking-widest font-light mt-1">
+            推开门廊，开始今日的精神品鉴 🧀
+        </p>
+    </header>
+
+    <!-- 交互核心区：暖黄小方块网格 -->
+    <main id="app-container" class="w-full max-w-md my-auto fade-in">
+        <div id="grid-matrix" class="grid grid-cols-2 gap-4"></div>
+    </main>
+
+    <!-- 底部控制区（Satisfied? 优雅返回） -->
+    <footer class="my-6 text-center">
+        <button id="reset-btn" onclick="resetFlow()" class="hidden text-xs text-[#8C6F47] hover:text-[#2D241E] tracking-[0.2em] font-serif-title transition-all duration-300 py-2.5 px-6 rounded-full border border-[#DFCDA3] hover:border-[#9C7A4A] bg-[#FFFDF4] shadow-sm">
+            Satisfied? ☕️
+        </button>
+    </footer>
+
+    <script>
+        // 带随机书库（Array）与多维度精选书目的全量数据结构
+        const treeData = {
+            title: "请选择今日品鉴的第一道门廊 🚪",
+            options: [
+                { id: "darkness", name: "01 暗面剖解 🍷", detail: "罪恶、偏离与心理深渊" },
+                { id: "space", name: "02 异质空间 ☕️", detail: "地下都市、情感异化与亚文化" },
+                { id: "ghost", name: "03 文化幽灵 🕯️", detail: "怪谈、巫术与集体潜意识" },
+                { id: "gap", name: "04 文明缝隙 🥐", detail: "微观历史、欲望与阶级张力" }
+            ],
+            next: {
+                // --- 01 暗面剖解 ---
+                "darkness": {
+                    title: "选择探索深渊的切入维度 🍇",
+                    options: [
+                        { id: "crime_psych", name: "犯罪心理与画像 🗡️", detail: "残酷与偏离行为" },
+                        { id: "madness", name: "精神病理与控制 🧪", detail: "被制造与被封印的疯癫" },
+                        { id: "justice", name: "审判与法医剖解 ⚖️", detail: "秩序与尸身体证" }
+                    ],
+                    next: {
+                        "crime_psych": {
+                            title: "选择细分品味 🍴",
+                            options: [
+                                { id: "evil_nature", name: "恶的本质剖析 🖤", detail: "心理变态与混沌世界" }
+                            ],
+                            books: [
+                                {
+                                    book: "《恶：在人类暴力与残酷之中》",
+                                    type: "Criminology & Psychology",
+                                    quote: "“恶并非来自于外在的恶魔，而是来自于人类理性在极度失控或冷酷漠然时的自我建构。”",
+                                    summary: "避开了廉价的道德批判，用冰冷而极其精确的心理剖面，拆解那些看似无法理解的残酷行为背后的深层逻辑。",
+                                    tag: "黑松露主菜 🥩"
+                                },
+                                {
+                                    book: "《心理神探：FBI特工缉凶记》",
+                                    type: "Criminal Profiling",
+                                    quote: "“要想战胜怪物，你必须先步入怪物的精神世界，用他的眼睛去凝视黑暗。”",
+                                    summary: "侧写术开山之作。详细记录了行为科学组如何通过现场细节构建凶手的人格与心理画像。",
+                                    tag: "特调冷饮 🍷"
+                                },
+                                {
+                                    book: "《变态心理学：极端行为的深层逻辑》",
+                                    type: "Dark Psychology",
+                                    quote: "“正常与变态之间并没有不可逾越的鸿沟，只有机制失调后的偏离演化。”",
+                                    summary: "深入剖析极度反社会人格、偏执与冲动控制障碍，展示人性在极端压力下的扭曲形状。",
+                                    tag: "冷萃咖啡 ☕️"
+                                }
+                            ]
+                        },
+                        "madness": {
+                            title: "选择细分品味 🍴",
+                            options: [
+                                { id: "making_mad", name: "疯癫的社会建构 🌀", detail: "制度与日常精神病理" }
+                            ],
+                            books: [
+                                {
+                                    book: "《日常生活的精神病学》",
+                                    type: "Psychopathology & Society",
+                                    quote: "“当正常与疯癫的界限由社会权力所划定时，每个人都有可能在某个瞬间被判入异类之列。”",
+                                    summary: "揭示了现代社会如何将偏离常规的情绪和行为病理化，是一本关乎人性边界的清醒宣告。",
+                                    tag: "特调冰饮 🍹"
+                                },
+                                {
+                                    book: "《疯癫与文明》",
+                                    type: "Philosophy & History",
+                                    quote: "“疯癫不是一种疾病，而是一种理性与非理性在历史长河中的隐秘对话。”",
+                                    summary: "米歇尔·福柯经典之作。梳理了从中世纪到现代，理性社会如何通过隔离与收容来定义并‘制造’疯癫。",
+                                    tag: "苦味苦艾 🍸"
+                                },
+                                {
+                                    book: "《被禁锢的心灵》",
+                                    type: "Psychological Control",
+                                    quote: "“最彻底的服从，是让被统治者将强加的意志误以为是自己内心的真诚渴望。”",
+                                    summary: "探讨意识形态与极权环境如何精妙地重塑人类个体的大脑认知与心理防御机制。",
+                                    tag: "清口薄荷 🌿"
+                                }
+                            ]
+                        },
+                        "justice": {
+                            title: "选择细分品味 🍴",
+                            options: [
+                                { id: "forensic", name: "尸身与物理真相 🔍", detail: "死者的最后口述" }
+                            ],
+                            books: [
+                                {
+                                    book: "《不知死，焉知生：法医的故事》",
+                                    type: "Forensic & Memoir",
+                                    quote: "“死者从不说谎，说谎的只有活人的记忆与利益。”",
+                                    summary: "通过顶级法医的解剖台视角，呈现死者留给世界最后的物理证据。冰冷、理性，却蕴含尊严。",
+                                    tag: "清口薄荷 🌿"
+                                },
+                                {
+                                    book: "《解剖台上的死者》",
+                                    type: "Forensic Pathology",
+                                    quote: "“每一处创伤都是一场无声的诉说，法医的刀尖就是他们的译者。”",
+                                    summary: "用详实的病理记录与逻辑推理，还原犯罪现场与受害人生命的最后一刻。",
+                                    tag: "特浓咖啡 ☕️"
+                                }
+                            ]
+                        }
+                    }
+                },
+                // --- 02 异质空间 ---
+                "space": {
+                    title: "选择进入的地下品鉴室 🧀",
+                    options: [
+                        { id: "urban_under", name: "都市暗流 🏙️", detail: "衰落、角落与街头发现" },
+                        { id: "cold_intimacy", name: "情感异化 🧊", detail: "冷亲密与无爱社会" },
+                        { id: "subculture", name: "浪荡子与亚文化 🎷", detail: "嬉皮、摇滚与反叛" }
+                    ],
+                    next: {
+                        "urban_under": {
+                            title: "选择城市视角 🏙️",
+                            options: [
+                                { id: "street_life", name: "街头角力 🚶", detail: "隐形人的边缘生存" }
+                            ],
+                            books: [
+                                {
+                                    book: "《城中城：社会学家的街头发现》",
+                                    type: "Urban Ethnography",
+                                    quote: "“在被遗忘的地下秩序里，有着属于边缘者自己的残酷道德与生存律法。”",
+                                    summary: "学者深入黑帮与地下街区深处，用亲身经历记录那些被宏大叙事抹去的具体生命与潜规则。",
+                                    tag: "美式黑咖啡 ☕️"
+                                },
+                                {
+                                    book: "《地下纽约：都市边缘者的潜行录》",
+                                    type: "Subterranean Exploration",
+                                    quote: "“城市的地表属于秩序与金钱，而地下复杂的隧道网络，则是避难者与反抗者的最后庇护所。”",
+                                    summary: "实地探访居住在纽约废弃地铁线与下水道中的无家可归者与异质群体，展现惊人的地下生态。",
+                                    tag: "精酿黑啤 🍺"
+                                }
+                            ]
+                        },
+                        "cold_intimacy": {
+                            title: "选择亲密关系切口 💔",
+                            options: [
+                                { id: "commodification", name: "情感商品化 🛒", detail: "理性资本主义下的冷酷" }
+                            ],
+                            books: [
+                                {
+                                    book: "《冷亲密》",
+                                    type: "Sociology of Emotions",
+                                    quote: "“当现代人学会像评估投资回报率一样评估爱情时，亲密关系就成了最精致的自我防御手段。”",
+                                    summary: "精准刺穿了现代人看似自由、实则冷漠脆弱的情感困境，为当代爱欲提供清醒的诊断。",
+                                    tag: "冰醇奶冻 🍮"
+                                },
+                                {
+                                    book: "《无爱的社会》",
+                                    type: "Modern Intimacy",
+                                    quote: "“我们从未像今天这样渴望被理解，也从未像今天这样恐惧被伤害。”",
+                                    summary: "分析亲密关系的彻底避险化趋势，以及算法与社交软件如何加速了情感的快餐化与可替换性。",
+                                    tag: "苦味焦糖 🍮"
+                                }
+                            ]
+                        },
+                        "subculture": {
+                            title: "选择反叛切口 🎸",
+                            options: [
+                                { id: "bohemian", name: "波希米亚灵魂 🎨", detail: "艺术大爆炸与浪荡美学" }
+                            ],
+                            books: [
+                                {
+                                    book: "《波希米亚人：巴黎拉丁区文人生活》",
+                                    type: "Cultural History",
+                                    quote: "“贫穷是他们的勋章，艺术是他们的信仰，他们用放浪不羁的姿态迎头撞击平庸的时代。”",
+                                    summary: "还原19至20世纪初隐匿在巴黎角落里的天才、狂人与浪荡子们的真实生存图景。",
+                                    tag: "热葡萄酒 🍷"
+                                },
+                                {
+                                    book: "《亚文化：风格的意义》",
+                                    type: "Cultural Studies",
+                                    quote: "“服装、发型与音乐不仅仅是流行，它们是边缘青年向主流社会无声表达抗争的符号武器。”",
+                                    summary: "伯明翰学派代表作，深刻拆解朋克、摩斯族等亚文化如何通过风格符号完成对主流秩序的颠覆。",
+                                    tag: "精酿黑啤 🍺"
+                                }
+                            ]
+                        }
+                    }
+                },
+                // --- 03 文化幽灵 ---
+                "ghost": {
+                    title: "选择民俗与潜意识幽灵 🕯️",
+                    options: [
+                        { id: "yokai", name: "东方妖怪与远野 🦊", detail: "民俗、怪谈与异闻" },
+                        { id: "witchcraft", name: "巫术与猎杀 🔮", detail: "禁忌、狂热与集体惊惧" }
+                    ],
+                    next: {
+                        "yokai": {
+                            title: "选择怪谈切口 🍵",
+                            options: [
+                                { id: "folklore", name: "远野物语 🌲", detail: "山野与山民的隐秘世界" }
+                            ],
+                            books: [
+                                {
+                                    book: "《柳田国男远野物语拾遗》",
+                                    type: "Folklore & Mythology",
+                                    quote: "“妖怪并非凭空产生的幻想，它是古人对未知自然与深层恐惧的具象化落印。”",
+                                    summary: "采风自山林深处口口相传的神秘异闻，展现人与自然、恐惧与信仰交织的奇异世界。",
+                                    tag: "深山焙茶 🍵"
+                                },
+                                {
+                                    book: "《日本妖怪文化史》",
+                                    type: "Cultural Folklore",
+                                    quote: "“每一个被创造出来的妖怪，都对应着人类内心深处某块不敢直视的阴影。”",
+                                    summary: "从社会学与心理学视角梳理妖怪形象的演变，探寻怪谈背后折射的时代集体心理。",
+                                    tag: "抹茶大福 🍡"
+                                }
+                            ]
+                        },
+                        "witchcraft": {
+                            title: "选择狂热切口 🕯️",
+                            options: [
+                                { id: "witch_hunt", name: "女巫审判 🕸️", detail: "巴洛克时期的恐慌" }
+                            ],
+                            books: [
+                                {
+                                    book: "《猎杀女巫：巴洛克时期的惊惧》",
+                                    type: "Microhistory",
+                                    quote: "“当群体被恐惧与偏见驱使时，任何异于常人的举止都会被锻造成通往火刑柱的铁证。”",
+                                    summary: "深刻解构欧洲巫术恐慌机制，揭示权力与偏见如何在迷信的幌子下进行合法迫害。",
+                                    tag: "微醺苦艾 🍸"
+                                },
+                                {
+                                    book: "《女巫与魔鬼：中世纪的狂热与偏见》",
+                                    type: "History of Religion",
+                                    quote: "“审判者的法庭上不需要事实，只需要能安抚公众恐惧的牺牲品。”",
+                                    summary: "剖析宗教裁决所与大众惊俱心理之间的共生关系，展现文明背后的黑暗侧面。",
+                                    tag: "红酒煮梨 🍐"
+                                }
+                            ]
+                        }
+                    }
+                },
+                // --- 04 文明缝隙 ---
+                "gap": {
+                    title: "选择观察文明的视角 🥐",
+                    options: [
+                        { id: "sensory", name: "欲望与日常史 🥧", detail: "饮食、血腥与文化构建" },
+                        { id: "class_strife", name: "阶级固化与撕裂 🏛️", detail: "绝望者与消失的平民" }
+                    ],
+                    next: {
+                        "sensory": {
+                            title: "选择日常切口 🍽️",
+                            options: [
+                                { id: "feast_blood", name: "血腥与盛宴 🍗", detail: "餐桌上的文明演进" }
+                            ],
+                            books: [
+                                {
+                                    book: "《血腥的盛宴》",
+                                    type: "Sensory History",
+                                    quote: "“人类如何对待食物与烹饪，恰恰折射出他们如何定义野蛮与文明的边界。”",
+                                    summary: "借由食物与宴席历史，揭示人类在满足原始生理欲望时如何精心塑造复杂的礼仪与阶级。",
+                                    tag: "主厨前菜 🥖"
+                                },
+                                {
+                                    book: "《厨房里的哲学家》",
+                                    type: "Gastronomy & Philosophy",
+                                    quote: "“告诉我你吃什么，我就能告诉你，你是什么样的人。”",
+                                    summary: "美食学开山鼻祖萨瓦兰的代表作。将味觉、食欲与社会学、哲学机智地结合在一起。",
+                                    tag: "香草舒芙蕾 🍮"
+                                }
+                            ]
+                        },
+                        "class_strife": {
+                            title: "选择阶级切口 📜",
+                            options: [
+                                { id: "rust_belt", name: "被遗忘的阶层 🏚️", detail: "白人家族的悲剧与固化" }
+                            ],
+                            books: [
+                                {
+                                    book: "《绝望者之歌》",
+                                    type: "Sociology & Memoir",
+                                    quote: "“贫穷不仅仅是缺乏资金，它是一种如影随形的心理创伤，代代相传。”",
+                                    summary: "写尽底层平民在工业衰退与阶层固化面前的挣扎、麻木与微弱抗争。",
+                                    tag: "特浓 Espresso ☕️"
+                                },
+                                {
+                                    book: "《下沉年代》",
+                                    type: "Modern History",
+                                    quote: "“当旧的解体、新的未立，个体就像解体大陆上的碎片，漂泊无依。”",
+                                    summary: "记录几十年来普通人在解体时代中的遭遇，展现宏大社会变迁如何碾过个体命运。",
+                                    tag: "黑巧可可 🍫"
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        };
+
+        let currentStep = treeData;
+
+        function renderGrid(data) {
+            const container = document.getElementById('app-container');
+            const subTitle = document.getElementById('sub-title');
+            
+            subTitle.innerText = data.title;
+            
+            let html = '<div id="grid-matrix" class="grid grid-cols-2 gap-4 fade-in">';
+            data.options.forEach(opt => {
+                html += `
+                    <div onclick="handleSelect('${opt.id}')" class="creme-box p-5 rounded-2xl flex flex-col justify-between cursor-pointer text-left aspect-[4/3]">
+                        <span class="text-sm font-semibold text-[#2D241E] tracking-wide">${opt.name}</span>
+                        <span class="text-[11px] text-[#7A644D] tracking-tight leading-relaxed mt-2 font-light">${opt.detail}</span>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        function handleSelect(id) {
+            const nextNode = currentStep.next[id];
+
+            // 判断是否到了末级书库（books 数组）
+            if (nextNode.books && nextNode.books.length > 0) {
+                // 🎲 核心逻辑：从书库中随机抽取一本
+                const randomIndex = Math.floor(Math.random() * nextNode.books.length);
+                const selectedBook = nextNode.books[randomIndex];
+                
+                renderResult(selectedBook);
+                document.getElementById('reset-btn').classList.remove('hidden');
+            } else {
+                currentStep = nextNode;
+                renderGrid(nextNode);
+            }
+        }
+
+        function renderResult(res) {
+            const container = document.getElementById('app-container');
+            const subTitle = document.getElementById('sub-title');
+            subTitle.innerText = "Une Dégustation de L'esprit · 今日品鉴推荐 🍽️";
+
+            container.innerHTML = `
+                <div class="fade-in bg-[#FFFDF4] border border-[#E8D8B5] rounded-2xl p-7 text-left shadow-xl relative overflow-hidden">
+                    <div class="flex justify-between items-center mb-5">
+                        <span class="text-[10px] uppercase font-serif-title tracking-[0.25em] px-3 py-1 bg-[#F5E6BF] text-[#7A5B36] rounded-full border border-[#E3CD9A] font-medium">${res.type}</span>
+                        <span class="text-[10px] font-serif-title text-[#9C8263] tracking-widest">[ ${res.tag} ]</span>
+                    </div>
+                    
+                    <h2 class="text-xl font-medium text-[#2D241E] mb-4 leading-snug tracking-wide font-serif-title">${res.book}</h2>
+                    
+                    <blockquote class="text-xs text-[#544436] italic border-l-2 border-[#C29B63] pl-4 my-5 leading-relaxed font-serif">
+                        ${res.quote}
+                    </blockquote>
+                    
+                    <p class="text-xs text-[#705E4E] leading-relaxed font-light mb-6 tracking-wide">
+                        ${res.summary}
+                    </p>
+
+                    <div class="pt-4 border-t border-[#F2E4C4] flex justify-between items-center text-[10px] text-[#8C6F47] font-serif-title">
+                        <span class="tracking-widest">Crème de la Crème 🥐</span>
+                        <span class="text-[#A38867]">[ 长按或截图保存餐单 📸 ]</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        function resetFlow() {
+            currentStep = treeData;
+            renderGrid(treeData);
+            document.getElementById('reset-btn').classList.add('hidden');
+        }
+
+        // 初始化渲染第一层
+        renderGrid(treeData);
+    </script>
+</body>
+</html>
